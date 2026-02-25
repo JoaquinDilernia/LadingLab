@@ -1,0 +1,102 @@
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  background: #1a1a2e;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 40px;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.card h1 {
+  font-size: 24px;
+  margin-bottom: 12px;
+  color: #111;
+}
+
+.card p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+.install-info {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 20px;
+  text-align: left;
+}
+
+.install-info p {
+  margin-bottom: 4px;
+}
+
+.card--success {
+  border-top: 4px solid #22c55e;
+}
+
+.success-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #fff;
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.store-info {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0;
+}
+
+.store-info code {
+  font-family: monospace;
+  font-size: 14px;
+  color: #15803d;
+}
+
+.card--error {
+  border-top: 4px solid #ef4444;
+}
+
+.hint {
+  font-size: 13px;
+  color: #888;
+  margin-top: 12px;
+}

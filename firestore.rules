@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // landinglab_stores — el usuario vinculado puede leer su tienda (sin access_token expuesto)
+    match /landinglab_stores/{storeId} {
+      allow read, write: if request.auth != null
+        && request.auth.token.storeId == storeId;
+    }
+
+    // landinglab_users — cada usuario puede leer/escribir solo su propio doc
+    match /landinglab_users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // landinglab_landings — lectura pública si published; escritura solo el dueño
+    match /landinglab_landings/{landingId} {
+      allow read: if resource.data.status == "published"
+        || (request.auth != null && request.auth.token.storeId == resource.data.store_id);
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null
+        && request.auth.token.storeId == resource.data.store_id;
+    }
+
+    // landinglab_webhook_events — solo admin SDK (Cloud Functions)
+    match /landinglab_webhook_events/{docId} {
+      allow read, write: if false;
+    }
+  }
+}
