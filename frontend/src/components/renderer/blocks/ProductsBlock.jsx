@@ -19,13 +19,17 @@ export default function ProductsBlock({ block, products = [] }) {
   const v = getVariants(d.animation);
   const cols = d.columns || 3;
 
-  /* Use injected products or show 3 placeholders */
-  const items = products.length > 0 ? products : Array(3).fill(null);
+  /* Filter by selected IDs or show all. Fall back to placeholders in builder. */
+  const selectedIds = d.product_ids || [];
+  const filtered = selectedIds.length > 0
+    ? products.filter((p) => selectedIds.includes(String(p.id)))
+    : products;
+  const items = filtered.length > 0 ? filtered : Array(3).fill(null);
 
   return (
     <section
       className="rdr-products"
-      style={{ background: d.bg_color || "#fff", padding: "64px 24px" }}
+      style={{ background: d.bg_color || "#fff", padding: `${d.padding_v || 64}px 24px` }}
     >
       <div className="rdr-products-inner">
         {d.title && (

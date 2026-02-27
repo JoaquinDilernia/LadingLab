@@ -44,11 +44,20 @@ export default function HeroBlock({ block }) {
       }}
     >
       {d.bg_type === "image" && d.overlay_opacity > 0 && (
-        <div className="rdr-hero-overlay" style={{ opacity: d.overlay_opacity / 100 }} />
+        <div
+          className="rdr-hero-overlay"
+          style={{
+            opacity: d.overlay_opacity / 100,
+            background: d.overlay_color || "#000",
+          }}
+        />
       )}
       <motion.div
         className="rdr-hero-inner"
-        style={{ textAlign: d.text_align || "center" }}
+        style={{
+          textAlign: d.text_align || "center",
+          padding: `${d.padding_v || 80}px 32px`,
+        }}
         initial={v.initial}
         whileInView={v.animate}
         viewport={{ once: true, amount: 0.1 }}

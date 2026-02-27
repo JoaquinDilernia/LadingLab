@@ -1,9 +1,10 @@
-import { TextField, TextareaField, SelectField, ColorField, SectionTitle, Divider } from "../ui/EditorFields";
+import { TextField, TextareaField, SelectField, ColorField, SliderField, GradientField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder, FONT_OPTIONS } from "../../../context/BuilderContext";
 
 const TITLE_SIZE_OPTIONS = ["32","40","48","56","64","72","80","96"].map((v) => ({ value: v, label: `${v}px` }));
 const SUB_SIZE_OPTIONS   = ["14","16","18","20","22","24"].map((v) => ({ value: v, label: `${v}px` }));
 const HEIGHT_OPTIONS     = ["300","400","500","600","700","800","100vh"].map((v) => ({ value: String(v), label: v === "100vh" ? "Pantalla completa" : `${v}px` }));
+const PADDING_OPTIONS    = ["32","48","64","80","96","120"].map((v) => ({ value: v, label: `${v}px` }));
 
 export default function HeroEditor({ block }) {
   const { updateBlock } = useBuilder();
@@ -31,20 +32,24 @@ export default function HeroEditor({ block }) {
         ]}
       />
       {d.bg_type === "gradient" && (
-        <TextField
-          label="Código CSS del degradado (sin 'linear-gradient')"
+        <GradientField
+          label="Degradado"
           value={d.bg_value}
           onChange={(v) => up("bg_value", v)}
-          placeholder="135deg, #1a1a2e 0%, #16213e 100%"
         />
       )}
       {d.bg_type === "image" && (
-        <TextField label="URL de la imagen de fondo" value={d.bg_image} onChange={(v) => up("bg_image", v)} placeholder="https://..." />
+        <>
+          <TextField label="URL de la imagen de fondo" value={d.bg_image} onChange={(v) => up("bg_image", v)} placeholder="https://..." />
+          <ColorField label="Color de superposición" value={d.overlay_color || "#000000"} onChange={(v) => up("overlay_color", v)} />
+          <SliderField label="Opacidad de superposición" value={d.overlay_opacity ?? 40} onChange={(v) => up("overlay_opacity", v)} min={0} max={90} step={5} />
+        </>
       )}
       {d.bg_type === "color" && (
         <ColorField label="Color de fondo" value={d.bg_value?.startsWith("#") ? d.bg_value : "#1a1a2e"} onChange={(v) => up("bg_value", v)} />
       )}
       <SelectField label="Altura mínima" value={String(d.min_height || 500)} onChange={(v) => up("min_height", v === "100vh" ? "100vh" : Number(v))} options={HEIGHT_OPTIONS} />
+      <SelectField label="Espaciado vertical" value={String(d.padding_v || "80")} onChange={(v) => up("padding_v", v)} options={PADDING_OPTIONS} />
 
       <Divider />
       <SectionTitle>Tipografía</SectionTitle>

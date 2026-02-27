@@ -12,12 +12,24 @@ import "./Builder.css";
 
 /* ── Inner layout that consumes BuilderProvider ── */
 function BuilderLayout({ landingId, storeId, getIdToken }) {
-  const { landing, blocks, isDirty, markSaved, updateTitle } = useBuilder();
+  const { landing, blocks, isDirty, markSaved, updateTitle, undo, redo, canUndo, canRedo } = useBuilder();
   const navigate = useNavigate();
   const [publishing, setPublishing] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   useAutoSave({ blocks, landing, landingId, storeId, getIdToken, api, isDirty, markSaved });
+
+  /* Keyboard shortcuts: Ctrl+Z = undo, Ctrl+Y / Ctrl+Shift+Z = redo */
+  useEffect(() => {
+    function handleKey(e) {
+      const mod = e.ctrlKey || e.metaKey;
+      if (!mod) return;
+      if (e.key === "z" && !e.shiftKey) { e.preventDefault(); undo(); }
+      if (e.key === "y" || (e.key === "z" && e.shiftKey)) { e.preventDefault(); redo(); }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [undo, redo]);
 
   const isPublished = landing?.status === "published";
 
@@ -61,6 +73,26 @@ function BuilderLayout({ landingId, storeId, getIdToken }) {
         <div className="builder-header-right">
           <div className={`save-indicator ${isDirty ? "saving" : "saved"}`}>
             {isDirty ? "● Guardando..." : "✓ Guardado"}
+          </div>
+
+          {/* Undo / Redo */}
+          <div className="undo-redo-group">
+            <button
+              className="hdr-btn hdr-btn-icon"
+              onClick={undo}
+              disabled={!canUndo}
+              title="Deshacer (Ctrl+Z)"
+            >
+              ↩
+            </button>
+            <button
+              className="hdr-btn hdr-btn-icon"
+              onClick={redo}
+              disabled={!canRedo}
+              title="Rehacer (Ctrl+Y)"
+            >
+              ↪
+            </button>
           </div>
 
           <button
@@ -152,7 +184,7 @@ export default function Builder() {
   }
 
   return (
-    <BuilderProvider initialLanding={landing}>
+    <BuilderProvider initialLanding={landing} storeId={storeId} getIdToken={getIdToken}>
       <BuilderLayout landingId={landingId} storeId={storeId} getIdToken={getIdToken} />
     </BuilderProvider>
   );

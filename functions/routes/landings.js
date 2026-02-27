@@ -85,7 +85,7 @@ router.post("/:storeId", verifyAuth, async (req, res) => {
   if (!checkStoreAccess(req, req.params.storeId)) {
     return res.status(403).json({ error: "Sin acceso" });
   }
-  const { title } = req.body;
+  const { title, blocks } = req.body;
   if (!title) return res.status(400).json({ error: "title requerido" });
 
   const slug = title
@@ -103,7 +103,7 @@ router.post("/:storeId", verifyAuth, async (req, res) => {
       title,
       slug,
       status: "draft",
-      blocks: [],
+      blocks: Array.isArray(blocks) ? blocks : [],
       seo: { title: "", description: "", og_image: "" },
       theme: { primary_color: "#000000", font: "Inter" },
       views: 0,
@@ -222,6 +222,48 @@ router.delete("/:storeId/:landingId", verifyAuth, async (req, res) => {
   } catch (err) {
     console.error("landings DELETE error:", err.message);
     return res.status(500).json({ error: "Error al eliminar" });
+  }
+});
+
+/**
+ * POST /api/landings/:storeId/:landingId/duplicate
+ * Duplica una landing existente.
+ */
+router.post("/:storeId/:landingId/duplicate", verifyAuth, async (req, res) => {
+  if (!checkStoreAccess(req, req.params.storeId)) {
+    return res.status(403).json({ error: "Sin acceso" });
+  }
+  try {
+    const doc = await db.collection("landinglab_landings").doc(req.params.landingId).get();
+    if (!doc.exists || doc.data().store_id !== String(req.params.storeId)) {
+      return res.status(404).json({ error: "Landing no encontrada" });
+    }
+
+    const source = doc.data();
+    const newTitle = `${source.title} (copia)`;
+    const newSlug = source.slug
+      .replace(/-[a-z0-9]+$/, "")       // quitar suffix de timestamp anterior
+      .concat("-copia-" + Date.now().toString(36));
+
+    const copy = {
+      store_id: source.store_id,
+      title: newTitle,
+      slug: newSlug,
+      status: "draft",
+      blocks: source.blocks || [],
+      seo: source.seo || { title: "", description: "", og_image: "" },
+      theme: source.theme || { primary_color: "#000000", font: "Inter" },
+      views: 0,
+      created_at: FieldValue.serverTimestamp(),
+      updated_at: FieldValue.serverTimestamp(),
+      published_at: null,
+    };
+
+    const docRef = await db.collection("landinglab_landings").add(copy);
+    return res.status(201).json({ id: docRef.id, ...copy });
+  } catch (err) {
+    console.error("landings duplicate error:", err.message);
+    return res.status(500).json({ error: "Error al duplicar landing" });
   }
 });
 

@@ -1,10 +1,15 @@
-import { TextField, TextareaField, SelectField, ColorField, ToggleField, NumberField, SectionTitle, Divider } from "../ui/EditorFields";
+import { useState } from "react";
+import { TextField, SelectField, ColorField, ToggleField, NumberField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
+import ProductPickerModal from "./ProductPickerModal";
 
 export default function ProductsEditor({ block }) {
   const { updateBlock } = useBuilder();
   const d = block.data;
   const up = (k, v) => updateBlock(block.id, { [k]: v });
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  const selectedCount = (d.product_ids || []).length;
 
   return (
     <>
@@ -14,9 +19,26 @@ export default function ProductsEditor({ block }) {
 
       <Divider />
       <SectionTitle>Productos</SectionTitle>
-      <div style={{ fontSize: 12, color: "#888", lineHeight: 1.5, background: "#f7f8fa", borderRadius: 7, padding: "10px 12px" }}>
-        💡 Los productos se mostrarán automáticamente desde tu tienda TiendaNube. Los visitantes verán todos los productos activos.
+
+      {/* Picker trigger */}
+      <div className="ppicker-trigger-wrap">
+        <div className="ppicker-trigger-info">
+          {selectedCount === 0 ? (
+            <span className="ppicker-trigger-all">Mostrando todos los productos</span>
+          ) : (
+            <span className="ppicker-trigger-count">{selectedCount} producto{selectedCount > 1 ? "s" : ""} seleccionado{selectedCount > 1 ? "s" : ""}</span>
+          )}
+        </div>
+        <button className="ppicker-trigger-btn" onClick={() => setPickerOpen(true)}>
+          🛍️ Elegir productos
+        </button>
+        {selectedCount > 0 && (
+          <button className="ppicker-trigger-clear" onClick={() => up("product_ids", [])}>
+            Mostrar todos
+          </button>
+        )}
       </div>
+
       <NumberField label="Columnas" value={d.columns} onChange={(v) => up("columns", v)} min={1} max={4} />
 
       <Divider />
@@ -29,7 +51,21 @@ export default function ProductsEditor({ block }) {
 
       <Divider />
       <SectionTitle>Estilo</SectionTitle>
+      <SelectField
+        label="Espaciado vertical"
+        value={String(d.padding_v || "64")}
+        onChange={(v) => up("padding_v", Number(v))}
+        options={["32","48","64","80","96","120"].map((n) => ({ value: n, label: `${n}px` }))}
+      />
       <ColorField label="Color de fondo" value={d.bg_color} onChange={(v) => up("bg_color", v)} />
+
+      {pickerOpen && (
+        <ProductPickerModal
+          selectedIds={d.product_ids || []}
+          onConfirm={(ids) => up("product_ids", ids)}
+          onClose={() => setPickerOpen(false)}
+        />
+      )}
     </>
   );
 }

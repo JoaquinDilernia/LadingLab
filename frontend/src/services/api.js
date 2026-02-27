@@ -33,9 +33,12 @@ export const api = {
   // Landings
   getLandings: (storeId, token) => request("GET", `/landings/${storeId}`, null, token),
   getLanding: (storeId, landingId, token) => request("GET", `/landings/${storeId}/${landingId}`, null, token),
-  createLanding: (storeId, title, token) => request("POST", `/landings/${storeId}`, { title }, token),
+  createLanding: (storeId, title, token, blocks) =>
+    request("POST", `/landings/${storeId}`, { title, ...(blocks ? { blocks } : {}) }, token),
   updateLanding: (storeId, landingId, data, token) => request("PUT", `/landings/${storeId}/${landingId}`, data, token),
   deleteLanding: (storeId, landingId, token) => request("DELETE", `/landings/${storeId}/${landingId}`, null, token),
+  duplicateLanding: (storeId, landingId, token) =>
+    request("POST", `/landings/${storeId}/${landingId}/duplicate`, {}, token),
   publishLanding: (storeId, landingId, publish, token) =>
     request("POST", `/landings/${storeId}/${landingId}/publish`, { publish }, token),
   getPublicLanding: (slug) => request("GET", `/landings/public/${slug}`),

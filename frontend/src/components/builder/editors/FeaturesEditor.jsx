@@ -1,4 +1,4 @@
-import { TextField, TextareaField, ColorField, NumberField, SectionTitle, Divider } from "../ui/EditorFields";
+import { TextField, TextareaField, ColorField, NumberField, SelectField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
 import { v4 as uuid } from "uuid";
 
@@ -62,6 +62,12 @@ export default function FeaturesEditor({ block }) {
       <Divider />
       <SectionTitle>Estilo</SectionTitle>
       <NumberField label="Columnas" value={d.columns} onChange={(v) => up("columns", v)} min={1} max={4} />
+      <SelectField
+        label="Espaciado vertical"
+        value={String(d.padding_v || "64")}
+        onChange={(v) => up("padding_v", Number(v))}
+        options={["32","48","64","80","96","120"].map((n) => ({ value: n, label: `${n}px` }))}
+      />
       <ColorField label="Color de fondo" value={d.bg_color} onChange={(v) => up("bg_color", v)} />
       <ColorField label="Color de texto" value={d.text_color} onChange={(v) => up("text_color", v)} />
     </>

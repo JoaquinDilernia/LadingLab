@@ -3,9 +3,30 @@ import { useBuilder } from "../../context/BuilderContext";
 import LandingRenderer from "../renderer/LandingRenderer";
 
 const DEVICES = [
-  { id: "desktop", label: "Desktop",  icon: "🖥️",  width: "100%" },
-  { id: "tablet",  label: "Tablet",   icon: "📱",  width: 768 },
-  { id: "mobile",  label: "Móvil",    icon: "📱",  width: 390 },
+  {
+    id: "desktop", label: "Desktop", width: "100%",
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+      </svg>
+    ),
+  },
+  {
+    id: "tablet", label: "Tablet", width: 768,
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+      </svg>
+    ),
+  },
+  {
+    id: "mobile", label: "Móvil", width: 390,
+    icon: (
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="6" y="2" width="12" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>
+      </svg>
+    ),
+  },
 ];
 
 export default function PreviewModal({ onClose }) {

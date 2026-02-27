@@ -1,4 +1,4 @@
-import { TextField, ColorField, SectionTitle, Divider } from "../ui/EditorFields";
+import { TextField, ColorField, SelectField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
 
 export default function CtaBannerEditor({ block }) {
@@ -18,6 +18,12 @@ export default function CtaBannerEditor({ block }) {
       <SectionTitle>Colores del banner</SectionTitle>
       <ColorField label="Fondo" value={d.bg_color} onChange={(v) => up("bg_color", v)} />
       <ColorField label="Texto" value={d.text_color} onChange={(v) => up("text_color", v)} />
+      <SelectField
+        label="Espaciado vertical"
+        value={String(d.padding_v || "56")}
+        onChange={(v) => up("padding_v", Number(v))}
+        options={["24","40","56","72","88"].map((n) => ({ value: n, label: `${n}px` }))}
+      />
 
       <Divider />
       <SectionTitle>Colores del botón</SectionTitle>

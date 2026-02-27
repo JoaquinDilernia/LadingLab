@@ -8,7 +8,10 @@ export default function CtaBannerBlock({ block }) {
   return (
     <section
       className="rdr-cta"
-      style={{ background: d.bg_color || "#111" }}
+      style={{
+        background: d.bg_color || "#111",
+        padding: `${d.padding_v || 56}px 32px`,
+      }}
     >
       <motion.div
         className="rdr-cta-inner"

@@ -179,17 +179,60 @@ export const BLOCK_META = {
   columns:       { label: "Columnas",     icon: "⬜",  desc: "2 o 3 columnas lado a lado" },
 };
 
+const MAX_HISTORY = 50;
+
 export const BuilderContext = createContext(null);
 
-export function BuilderProvider({ children, initialLanding }) {
+export function BuilderProvider({ children, initialLanding, storeId, getIdToken }) {
   const [landing, setLanding] = useState(initialLanding);
-  const [blocks, setBlocks] = useState(
-    (initialLanding?.blocks || []).sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-  );
+
+  const initialBlocks = (initialLanding?.blocks || []).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
+  // Historial: past = snapshots anteriores, present = estado actual, future = estados rehacibles
+  const [history, setHistory] = useState({ past: [], present: initialBlocks, future: [] });
+
   const [activeBlockId, setActiveBlockId] = useState(null);
   const [isDirty, setIsDirty]             = useState(false);
 
+  const blocks      = history.present;
+  const canUndo     = history.past.length > 0;
+  const canRedo     = history.future.length > 0;
   const activeBlock = blocks.find((b) => b.id === activeBlockId) ?? null;
+
+  // Pushea el estado actual al historial y establece el nuevo presente
+  const pushHistory = useCallback((newBlocks) => {
+    setHistory((prev) => ({
+      past: [...prev.past, prev.present].slice(-MAX_HISTORY),
+      present: newBlocks,
+      future: [],
+    }));
+  }, []);
+
+  const undo = useCallback(() => {
+    setHistory((prev) => {
+      if (prev.past.length === 0) return prev;
+      const previous = prev.past[prev.past.length - 1];
+      return {
+        past: prev.past.slice(0, -1),
+        present: previous,
+        future: [prev.present, ...prev.future],
+      };
+    });
+    setIsDirty(true);
+  }, []);
+
+  const redo = useCallback(() => {
+    setHistory((prev) => {
+      if (prev.future.length === 0) return prev;
+      const next = prev.future[0];
+      return {
+        past: [...prev.past, prev.present],
+        present: next,
+        future: prev.future.slice(1),
+      };
+    });
+    setIsDirty(true);
+  }, []);
 
   const addBlock = useCallback((type) => {
     const newBlock = {
@@ -198,48 +241,56 @@ export function BuilderProvider({ children, initialLanding }) {
       order: blocks.length,
       data: { ...BLOCK_DEFAULTS[type] },
     };
-    setBlocks((prev) => [...prev, newBlock]);
+    const newBlocks = [...blocks, newBlock];
+    pushHistory(newBlocks);
     setActiveBlockId(newBlock.id);
     setIsDirty(true);
     return newBlock.id;
-  }, [blocks.length]);
+  }, [blocks, pushHistory]);
 
   const removeBlock = useCallback((id) => {
-    setBlocks((prev) => prev.filter((b) => b.id !== id));
+    const newBlocks = blocks.filter((b) => b.id !== id);
+    pushHistory(newBlocks);
     setActiveBlockId((curr) => (curr === id ? null : curr));
     setIsDirty(true);
-  }, []);
+  }, [blocks, pushHistory]);
 
+  // updateBlock NO pushea al historial (demasiado granular para cada keystroke)
   const updateBlock = useCallback((id, dataUpdates) => {
-    setBlocks((prev) =>
-      prev.map((b) => b.id === id ? { ...b, data: { ...b.data, ...dataUpdates } } : b)
-    );
+    setHistory((prev) => ({
+      ...prev,
+      present: prev.present.map((b) =>
+        b.id === id ? { ...b, data: { ...b.data, ...dataUpdates } } : b
+      ),
+    }));
     setIsDirty(true);
   }, []);
 
   const reorderBlocks = useCallback((newBlocks) => {
-    setBlocks(newBlocks.map((b, i) => ({ ...b, order: i })));
+    pushHistory(newBlocks.map((b, i) => ({ ...b, order: i })));
     setIsDirty(true);
-  }, []);
+  }, [pushHistory]);
 
   const duplicateBlock = useCallback((id) => {
     const original = blocks.find((b) => b.id === id);
     if (!original) return;
     const copy = { ...original, id: uuid(), order: original.order + 0.5 };
-    setBlocks((prev) => {
-      const next = [...prev, copy]
-        .sort((a, b) => a.order - b.order)
-        .map((b, i) => ({ ...b, order: i }));
-      return next;
-    });
+    const newBlocks = [...blocks, copy]
+      .sort((a, b) => a.order - b.order)
+      .map((b, i) => ({ ...b, order: i }));
+    pushHistory(newBlocks);
     setActiveBlockId(copy.id);
     setIsDirty(true);
-  }, [blocks]);
+  }, [blocks, pushHistory]);
 
   const selectBlock = useCallback((id) => setActiveBlockId(id), []);
   const markSaved   = useCallback(() => setIsDirty(false), []);
   const updateTitle = useCallback((title) => {
     setLanding((prev) => ({ ...prev, title }));
+    setIsDirty(true);
+  }, []);
+  const updateTheme = useCallback((updates) => {
+    setLanding((prev) => ({ ...prev, theme: { ...(prev.theme || {}), ...updates } }));
     setIsDirty(true);
   }, []);
 
@@ -248,7 +299,9 @@ export function BuilderProvider({ children, initialLanding }) {
       value={{
         landing, blocks, activeBlockId, activeBlock, isDirty,
         addBlock, removeBlock, updateBlock, reorderBlocks,
-        duplicateBlock, selectBlock, markSaved, updateTitle,
+        duplicateBlock, selectBlock, markSaved, updateTitle, updateTheme,
+        undo, redo, canUndo, canRedo,
+        storeId, getIdToken,
       }}
     >
       {children}

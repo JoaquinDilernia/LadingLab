@@ -12,7 +12,7 @@ export default function FeaturesBlock({ block }) {
       className="rdr-features"
       style={{
         background: d.bg_color || "#f9f9f9",
-        padding: "64px 24px",
+        padding: `${d.padding_v || 64}px 24px`,
       }}
     >
       <div className="rdr-features-inner">

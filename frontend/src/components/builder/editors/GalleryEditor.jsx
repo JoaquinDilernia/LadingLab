@@ -1,5 +1,51 @@
-import { TextField, ColorField, NumberField, SectionTitle, Divider } from "../ui/EditorFields";
+import { useState } from "react";
+import { ColorField, NumberField, SectionTitle, Divider, TextField } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
+
+function GalleryImageItem({ url, index, total, onChange, onRemove, onMoveUp, onMoveDown }) {
+  const [draft, setDraft] = useState(url);
+  const [focused, setFocused] = useState(false);
+
+  function commit(val) {
+    const trimmed = val.trim();
+    setDraft(trimmed);
+    onChange(trimmed);
+  }
+
+  return (
+    <div className="gal-item">
+      {/* Thumbnail */}
+      <div className="gal-thumb-wrap">
+        {url ? (
+          <img src={url} alt="" className="gal-thumb" onError={(e) => { e.target.style.display = "none"; }} />
+        ) : (
+          <div className="gal-thumb-ph">🖼️</div>
+        )}
+        <span className="gal-thumb-num">{index + 1}</span>
+      </div>
+
+      {/* URL input */}
+      <div className="gal-input-col">
+        <input
+          className={`ef-input gal-url-input${focused ? " focused" : ""}`}
+          value={focused ? draft : url}
+          placeholder="https://... URL de imagen"
+          onChange={(e) => setDraft(e.target.value)}
+          onFocus={() => { setDraft(url); setFocused(true); }}
+          onBlur={(e) => { setFocused(false); commit(e.target.value); }}
+          onKeyDown={(e) => { if (e.key === "Enter") { e.target.blur(); } }}
+        />
+      </div>
+
+      {/* Controls */}
+      <div className="gal-item-actions">
+        <button className="gal-act-btn" onClick={onMoveUp}   disabled={index === 0}         title="Subir">↑</button>
+        <button className="gal-act-btn" onClick={onMoveDown} disabled={index === total - 1}  title="Bajar">↓</button>
+        <button className="gal-act-btn danger" onClick={onRemove} title="Eliminar">✕</button>
+      </div>
+    </div>
+  );
+}
 
 export default function GalleryEditor({ block }) {
   const { updateBlock } = useBuilder();
@@ -17,34 +63,34 @@ export default function GalleryEditor({ block }) {
 
   const removeImage = (idx) => up("images", images.filter((_, i) => i !== idx));
 
+  const moveImage = (idx, dir) => {
+    const next = [...images];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    up("images", next);
+  };
+
   return (
     <>
       <SectionTitle>Contenido</SectionTitle>
       <TextField label="Título de sección" value={d.title} onChange={(v) => up("title", v)} placeholder="Galería" />
 
       <Divider />
-      <SectionTitle>Imágenes</SectionTitle>
-      <div className="ef-item-list">
+      <SectionTitle>Imágenes ({images.filter(Boolean).length})</SectionTitle>
+
+      <div className="gal-list">
         {images.map((url, idx) => (
-          <div key={idx} className="ef-item" style={{ padding: "8px 10px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              {url && (
-                <img
-                  src={url}
-                  alt=""
-                  className="ef-image-preview"
-                />
-              )}
-              <input
-                className="ef-input"
-                value={url}
-                onChange={(e) => updateImage(idx, e.target.value)}
-                placeholder="https://... (URL de imagen)"
-                style={{ flex: 1 }}
-              />
-              <button className="ef-item-del" onClick={() => removeImage(idx)}>✕</button>
-            </div>
-          </div>
+          <GalleryImageItem
+            key={idx}
+            url={url}
+            index={idx}
+            total={images.length}
+            onChange={(v) => updateImage(idx, v)}
+            onRemove={() => removeImage(idx)}
+            onMoveUp={() => moveImage(idx, -1)}
+            onMoveDown={() => moveImage(idx, 1)}
+          />
         ))}
         <button className="ef-add-btn" onClick={addImage}>+ Agregar imagen</button>
       </div>
