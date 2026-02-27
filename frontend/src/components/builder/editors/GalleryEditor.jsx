@@ -1,10 +1,29 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { ColorField, NumberField, SectionTitle, Divider, TextField } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
+import { uploadImage } from "../../../services/uploadImage";
 
 function GalleryImageItem({ url, index, total, onChange, onRemove, onMoveUp, onMoveDown }) {
-  const [draft, setDraft] = useState(url);
-  const [focused, setFocused] = useState(false);
+  const [draft, setDraft]       = useState(url);
+  const [focused, setFocused]   = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileRef                 = useRef(null);
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const uploaded = await uploadImage(file);
+      onChange(uploaded);
+      setDraft(uploaded);
+    } catch {
+      /* silent — user can try again */
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
 
   function commit(val) {
     const trimmed = val.trim();
@@ -14,14 +33,22 @@ function GalleryImageItem({ url, index, total, onChange, onRemove, onMoveUp, onM
 
   return (
     <div className="gal-item">
-      {/* Thumbnail */}
-      <div className="gal-thumb-wrap">
-        {url ? (
+      {/* Thumbnail — click to upload */}
+      <div
+        className="gal-thumb-wrap"
+        onClick={() => !uploading && fileRef.current?.click()}
+        title="Clic para subir imagen"
+        style={{ cursor: "pointer" }}
+      >
+        {uploading ? (
+          <div className="ef-imgup-spinner" />
+        ) : url ? (
           <img src={url} alt="" className="gal-thumb" onError={(e) => { e.target.style.display = "none"; }} />
         ) : (
-          <div className="gal-thumb-ph">🖼️</div>
+          <div className="gal-thumb-ph">📁</div>
         )}
         <span className="gal-thumb-num">{index + 1}</span>
+        <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleFile} />
       </div>
 
       {/* URL input */}
@@ -29,7 +56,7 @@ function GalleryImageItem({ url, index, total, onChange, onRemove, onMoveUp, onM
         <input
           className={`ef-input gal-url-input${focused ? " focused" : ""}`}
           value={focused ? draft : url}
-          placeholder="https://... URL de imagen"
+          placeholder="https://... o clic en thumbnail para subir"
           onChange={(e) => setDraft(e.target.value)}
           onFocus={() => { setDraft(url); setFocused(true); }}
           onBlur={(e) => { setFocused(false); commit(e.target.value); }}
@@ -39,8 +66,8 @@ function GalleryImageItem({ url, index, total, onChange, onRemove, onMoveUp, onM
 
       {/* Controls */}
       <div className="gal-item-actions">
-        <button className="gal-act-btn" onClick={onMoveUp}   disabled={index === 0}         title="Subir">↑</button>
-        <button className="gal-act-btn" onClick={onMoveDown} disabled={index === total - 1}  title="Bajar">↓</button>
+        <button className="gal-act-btn" onClick={onMoveUp}   disabled={index === 0}        title="Subir">↑</button>
+        <button className="gal-act-btn" onClick={onMoveDown} disabled={index === total - 1} title="Bajar">↓</button>
         <button className="gal-act-btn danger" onClick={onRemove} title="Eliminar">✕</button>
       </div>
     </div>

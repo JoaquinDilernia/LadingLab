@@ -1,4 +1,5 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { uploadImage } from "../../../services/uploadImage";
 
 export function TextField({ label, value, onChange, placeholder }) {
   return (
@@ -285,4 +286,80 @@ export function SectionTitle({ children }) {
 
 export function Divider() {
   return <hr className="ef-divider" />;
+}
+
+/* ─── Image Upload Field ─────────────────────────────────────── */
+export function ImageUploadField({ label, value, onChange, placeholder = "https://..." }) {
+  const [uploading, setUploading] = useState(false);
+  const [err, setErr]             = useState(null);
+  const fileRef                   = useRef(null);
+
+  async function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    setErr(null);
+    try {
+      const url = await uploadImage(file);
+      onChange(url);
+    } catch {
+      setErr("Error al subir. Intentá de nuevo.");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
+
+  return (
+    <div className="ef-group">
+      {label && <label className="ef-label">{label}</label>}
+      <div className="ef-imgup">
+        {/* Thumbnail */}
+        <div
+          className="ef-imgup-thumb"
+          onClick={() => !uploading && fileRef.current?.click()}
+          title="Clic para subir imagen"
+        >
+          {uploading ? (
+            <div className="ef-imgup-spinner" />
+          ) : value ? (
+            <img
+              src={value}
+              alt=""
+              className="ef-imgup-preview"
+              onError={(e) => { e.target.style.display = "none"; }}
+            />
+          ) : (
+            <span className="ef-imgup-ph">📷</span>
+          )}
+        </div>
+
+        {/* Right col: URL input + upload button */}
+        <div className="ef-imgup-right">
+          <input
+            className="ef-input ef-imgup-url"
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder={placeholder}
+          />
+          <button
+            className="ef-imgup-btn"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? "Subiendo..." : "📁 Subir archivo"}
+          </button>
+        </div>
+
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFile}
+        />
+      </div>
+      {err && <span className="ef-imgup-err">{err}</span>}
+    </div>
+  );
 }

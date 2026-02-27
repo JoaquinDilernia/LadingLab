@@ -1,4 +1,4 @@
-import { TextField, SelectField, ColorField, SectionTitle, Divider } from "../ui/EditorFields";
+import { ImageUploadField, TextField, SelectField, ColorField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
 
 const RADIUS_OPTIONS  = ["0","4","8","12","16","24","9999"].map((v) => ({ value: v, label: v === "9999" ? "Circular" : `${v}px` }));
@@ -22,22 +22,7 @@ export default function ImageEditor({ block }) {
   return (
     <>
       <SectionTitle>Imagen</SectionTitle>
-      <TextField label="URL de la imagen" value={d.image_url} onChange={(v) => up("image_url", v)} placeholder="https://..." />
-      {d.image_url && (
-        <img
-          src={d.image_url}
-          alt="preview"
-          style={{
-            width: "100%",
-            borderRadius: 8,
-            maxHeight: 160,
-            objectFit: "cover",
-            border: "1.5px solid #ebebeb",
-          }}
-          onError={(e) => { e.target.style.display = "none"; }}
-          onLoad={(e)  => { e.target.style.display = "block"; }}
-        />
-      )}
+      <ImageUploadField label="Imagen" value={d.image_url} onChange={(v) => up("image_url", v)} />
       <TextField label="Texto alternativo (SEO)" value={d.alt} onChange={(v) => up("alt", v)} placeholder="Descripción de la imagen" />
       <TextField label="Enlace al hacer clic (opcional)" value={d.link_url} onChange={(v) => up("link_url", v)} placeholder="https://..." />
       <TextField label="Caption (pie de foto)" value={d.caption} onChange={(v) => up("caption", v)} placeholder="Descripción bajo la imagen..." />
@@ -73,3 +58,4 @@ export default function ImageEditor({ block }) {
     </>
   );
 }
+

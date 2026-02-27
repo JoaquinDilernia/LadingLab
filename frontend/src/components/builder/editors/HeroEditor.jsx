@@ -1,4 +1,4 @@
-import { TextField, TextareaField, SelectField, ColorField, SliderField, GradientField, SectionTitle, Divider } from "../ui/EditorFields";
+import { TextField, TextareaField, SelectField, ColorField, SliderField, GradientField, ImageUploadField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder, FONT_OPTIONS } from "../../../context/BuilderContext";
 
 const TITLE_SIZE_OPTIONS = ["32","40","48","56","64","72","80","96"].map((v) => ({ value: v, label: `${v}px` }));
@@ -40,7 +40,7 @@ export default function HeroEditor({ block }) {
       )}
       {d.bg_type === "image" && (
         <>
-          <TextField label="URL de la imagen de fondo" value={d.bg_image} onChange={(v) => up("bg_image", v)} placeholder="https://..." />
+          <ImageUploadField label="Imagen de fondo" value={d.bg_image} onChange={(v) => up("bg_image", v)} />
           <ColorField label="Color de superposición" value={d.overlay_color || "#000000"} onChange={(v) => up("overlay_color", v)} />
           <SliderField label="Opacidad de superposición" value={d.overlay_opacity ?? 40} onChange={(v) => up("overlay_opacity", v)} min={0} max={90} step={5} />
         </>
@@ -91,3 +91,4 @@ export default function HeroEditor({ block }) {
     </>
   );
 }
+

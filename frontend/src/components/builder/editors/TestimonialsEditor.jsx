@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TextField, TextareaField, SelectField, ColorField, SectionTitle, Divider, NumberField } from "../ui/EditorFields";
+import { TextField, TextareaField, SelectField, ColorField, ImageUploadField, SectionTitle, Divider, NumberField } from "../ui/EditorFields";
 import { useBuilder } from "../../../context/BuilderContext";
 import { v4 as uuid } from "uuid";
 
@@ -96,7 +96,7 @@ export default function TestimonialsEditor({ block }) {
               <TextField label="Rol / Empresa" value={item.role} onChange={(v) => updateItem(i, { role: v })} placeholder="Cliente verificada" />
               <TextareaField label="Testimonio" value={item.text} onChange={(v) => updateItem(i, { text: v })} placeholder="Excelente producto..." rows={3} />
               <SelectField label="Estrellas" value={String(item.rating ?? 5)} onChange={(v) => updateItem(i, { rating: Number(v) })} options={STAR_OPTIONS} />
-              <TextField label="Avatar URL (opcional)" value={item.avatar_url} onChange={(v) => updateItem(i, { avatar_url: v })} placeholder="https://..." />
+              <ImageUploadField label="Avatar" value={item.avatar_url} onChange={(v) => updateItem(i, { avatar_url: v })} />
             </div>
           )}
         </div>
@@ -116,3 +116,4 @@ export default function TestimonialsEditor({ block }) {
     </>
   );
 }
+

@@ -1314,3 +1314,49 @@
   padding: 10px 12px;
 }
 
+
+/* ═══════════════════════════════════════
+   IMAGE UPLOAD FIELD
+   ═══════════════════════════════════════ */
+
+.ef-imgup {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.ef-imgup-thumb {
+  width: 58px;
+  height: 58px;
+  border-radius: 8px;
+  background: #f3f4f6;
+  border: 1.5px dashed #d0d0d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ef-imgup-thumb:hover { border-color: #3b82f6; background: #eff6ff; }
+.ef-imgup-preview { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+.ef-imgup-ph { font-size: 20px; opacity: 0.45; }
+.ef-imgup-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid #e0e0e0;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+.ef-imgup-right { flex: 1; display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.ef-imgup-url { font-size: 11px !important; padding: 5px 8px !important; }
+.ef-imgup-btn {
+  width: 100%; padding: 5px 8px;
+  border-radius: 6px; border: 1.5px solid #d1d5db;
+  background: #f9fafb; font-size: 11px; font-weight: 600;
+  color: #555; cursor: pointer; font-family: inherit; text-align: left;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.ef-imgup-btn:hover:not(:disabled) { border-color: #3b82f6; background: #eff6ff; color: #3b82f6; }
+.ef-imgup-btn:disabled { opacity: 0.6; cursor: default; }
+.ef-imgup-err { display: block; font-size: 11px; color: #ef4444; margin-top: 2px; }

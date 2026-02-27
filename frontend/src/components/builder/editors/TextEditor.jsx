@@ -1,4 +1,4 @@
-import { TextField, TextareaField, SelectField, ColorField, SectionTitle, Divider } from "../ui/EditorFields";
+import { TextField, TextareaField, SelectField, ColorField, ImageUploadField, SectionTitle, Divider } from "../ui/EditorFields";
 import { useBuilder, FONT_OPTIONS } from "../../../context/BuilderContext";
 
 const FONT_SIZE_TITLE  = ["20","24","28","32","36","40","48","56","64"].map((v) => ({ value: v, label: `${v}px` }));
@@ -50,7 +50,7 @@ export default function TextEditor({ block }) {
         ]}
       />
       {d.layout !== "centered" && (
-        <TextField label="URL de imagen" value={d.image_url} onChange={(v) => up("image_url", v)} placeholder="https://..." />
+        <ImageUploadField label="Imagen" value={d.image_url} onChange={(v) => up("image_url", v)} />
       )}
       <SelectField label="Ancho máximo del contenido" value={d.max_width || "720"} onChange={(v) => up("max_width", v)} options={MAX_WIDTH_OPTIONS} />
       <SelectField label="Espaciado vertical" value={d.padding_v || "64"} onChange={(v) => up("padding_v", v)} options={PADDING_OPTIONS} />
@@ -79,3 +79,4 @@ export default function TextEditor({ block }) {
     </>
   );
 }
+
