@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useBuilder } from "../../context/BuilderContext";
 import LandingRenderer from "../renderer/LandingRenderer";
+import { api } from "../../services/api";
 
 const DEVICES = [
   {
@@ -30,8 +31,24 @@ const DEVICES = [
 ];
 
 export default function PreviewModal({ onClose }) {
-  const { blocks, landing } = useBuilder();
-  const [device, setDevice] = useState("desktop");
+  const { blocks, landing, storeId, getIdToken } = useBuilder();
+  const [device, setDevice]     = useState("desktop");
+  const [products, setProducts] = useState([]);
+
+  /* Fetch products if any products block exists */
+  useEffect(() => {
+    const hasProducts = blocks.some((b) => b.type === "products");
+    if (!hasProducts || !storeId) return;
+    (async () => {
+      try {
+        const token = await getIdToken();
+        const data  = await api.getProducts(storeId, token, { per_page: 200 });
+        setProducts(Array.isArray(data) ? data : (data.products || []));
+      } catch {
+        /* preview still works via products_cache */
+      }
+    })();
+  }, [blocks, storeId, getIdToken]);
 
   /* Lock body scroll */
   useEffect(() => {
@@ -93,7 +110,7 @@ export default function PreviewModal({ onClose }) {
           className="preview-frame"
           style={{ width: frameW, maxWidth: frameW }}
         >
-          <LandingRenderer landing={landing} blocks={blocks} />
+          <LandingRenderer landing={landing} blocks={blocks} products={products} />
         </div>
       </div>
     </div>

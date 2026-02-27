@@ -9,6 +9,10 @@ export default function ProductsEditor({ block }) {
   const up = (k, v) => updateBlock(block.id, { [k]: v });
   const [pickerOpen, setPickerOpen] = useState(false);
 
+  function handlePickerConfirm(ids, cache) {
+    updateBlock(block.id, { product_ids: ids, products_cache: cache });
+  }
+
   const selectedCount = (d.product_ids || []).length;
 
   return (
@@ -33,7 +37,7 @@ export default function ProductsEditor({ block }) {
           🛍️ Elegir productos
         </button>
         {selectedCount > 0 && (
-          <button className="ppicker-trigger-clear" onClick={() => up("product_ids", [])}>
+          <button className="ppicker-trigger-clear" onClick={() => updateBlock(block.id, { product_ids: [], products_cache: [] })}>
             Mostrar todos
           </button>
         )}
@@ -62,7 +66,7 @@ export default function ProductsEditor({ block }) {
       {pickerOpen && (
         <ProductPickerModal
           selectedIds={d.product_ids || []}
-          onConfirm={(ids) => up("product_ids", ids)}
+          onConfirm={handlePickerConfirm}
           onClose={() => setPickerOpen(false)}
         />
       )}

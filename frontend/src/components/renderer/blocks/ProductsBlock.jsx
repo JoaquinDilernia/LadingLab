@@ -19,12 +19,38 @@ export default function ProductsBlock({ block, products = [] }) {
   const v = getVariants(d.animation);
   const cols = d.columns || 3;
 
-  /* Filter by selected IDs or show all. Fall back to placeholders in builder. */
-  const selectedIds = d.product_ids || [];
-  const filtered = selectedIds.length > 0
-    ? products.filter((p) => selectedIds.includes(String(p.id)))
-    : products;
-  const items = filtered.length > 0 ? filtered : Array(3).fill(null);
+  /*
+   * Product resolution priority:
+   * 1. Live products injected from parent (preview/builder with auth)
+   * 2. products_cache — snapshot stored in block data when user picked products
+   * 3. Placeholders (editing with no data yet)
+   */
+  const selectedIds  = d.product_ids || [];
+  const cache        = d.products_cache || [];
+
+  let resolved;
+  if (products.length > 0) {
+    // Live: filter by selected IDs or show all
+    resolved = selectedIds.length > 0
+      ? products.filter((p) => selectedIds.includes(String(p.id)))
+      : products;
+  } else if (cache.length > 0) {
+    // Cached: already filtered to selection at pick time
+    resolved = cache;
+  } else {
+    resolved = [];
+  }
+
+  // Normalize to a common shape so the card can use one format
+  const normalized = resolved.map((p) => ({
+    id:        String(p.id),
+    name:      p.name || "",
+    price:     p.variants?.[0]?.price ?? p.price ?? "",
+    image:     p.image || p.images?.[0]?.src || "",
+    permalink: p.permalink || p.canonical_url || "#",
+  }));
+
+  const items = normalized.length > 0 ? normalized : Array(3).fill(null);
 
   return (
     <section
@@ -64,8 +90,8 @@ export default function ProductsBlock({ block, products = [] }) {
                 transition={{ ...v.transition, delay: (v.transition?.delay || 0) + i * 0.07 }}
               >
                 <div className="rdr-product-img">
-                  {product.images?.[0]?.src ? (
-                    <img src={product.images[0].src} alt={product.name || ""} />
+                  {product.image ? (
+                    <img src={product.image} alt={product.name || ""} />
                   ) : (
                     <div className="rdr-product-img-ph" />
                   )}

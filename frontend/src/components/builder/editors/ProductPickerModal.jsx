@@ -55,7 +55,18 @@ export default function ProductPickerModal({ selectedIds = [], onConfirm, onClos
   }
 
   function handleConfirm() {
-    onConfirm([...selected]);
+    const ids = [...selected];
+    // Build cache: snapshot of selected product data for rendering without auth
+    const cache = products
+      .filter((p) => selected.has(String(p.id)))
+      .map((p) => ({
+        id:        String(p.id),
+        name:      p.name || "",
+        price:     p.variants?.[0]?.price ?? p.price ?? "",
+        image:     p.images?.[0]?.src || "",
+        permalink: p.permalink || p.canonical_url || "",
+      }));
+    onConfirm(ids, cache);
     onClose();
   }
 
