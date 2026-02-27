@@ -348,3 +348,126 @@
 @media (max-width: 768px) {
   .rdr-testimonials-grid { grid-template-columns: 1fr !important; }
 }
+
+/* ═══════════════════════════════════════
+   MOBILE — Tablet (≤ 768px)
+   ═══════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Grids ── */
+  .rdr-columns-grid   { grid-template-columns: 1fr !important; }
+  .rdr-features-grid  { grid-template-columns: 1fr !important; }
+  .rdr-products-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+  .rdr-gallery-grid   { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── Section typography ── */
+  .rdr-section-title { font-size: clamp(20px, 5vw, 32px); }
+  .rdr-section-sub   { font-size: 15px; margin-bottom: 28px; }
+
+  /* ── Hero ── */
+  .rdr-hero-inner { padding-left: 24px !important; padding-right: 24px !important; }
+  .rdr-hero-title { letter-spacing: -0.3px !important; }
+  .rdr-hero-sub   { max-width: 100% !important; }
+  .rdr-hero-cta   { padding: 13px 28px; }
+
+  /* ── CTA Banner ── */
+  .rdr-cta-inner { flex-direction: column; text-align: center; gap: 20px; }
+  .rdr-cta-btn   { padding: 13px 28px; }
+
+  /* ── Countdown ── */
+  .rdr-countdown-boxes { gap: 10px; }
+  .rdr-cd-num          { font-size: 36px; }
+  .rdr-cd-box          { min-width: 64px; padding: 12px 16px; }
+
+  /* ── Products ── */
+  .rdr-product-info  { padding: 12px; }
+  .rdr-product-name  { font-size: 13px; }
+  .rdr-product-price { font-size: 14px; }
+
+  /* ── Features ── */
+  .rdr-features-grid { gap: 16px; }
+
+  /* ── Text block ── */
+  .rdr-text-row { flex-direction: column !important; gap: 24px; }
+  .rdr-text-img { width: 100% !important; }
+}
+
+/* ═══════════════════════════════════════
+   MOBILE — Phone (≤ 480px)
+   ═══════════════════════════════════════ */
+@media (max-width: 480px) {
+
+  /* ── Grids ── */
+  .rdr-products-grid { grid-template-columns: 1fr !important; }
+  .rdr-gallery-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── Hero title/subtitle override inline font-size ── */
+  .rdr-hero-title {
+    font-size: clamp(26px, 8vw, 42px) !important;
+    letter-spacing: -0.5px !important;
+    margin-bottom: 14px !important;
+  }
+  .rdr-hero-sub {
+    font-size: 15px !important;
+    margin-bottom: 28px !important;
+  }
+  .rdr-hero-inner { padding-left: 16px !important; padding-right: 16px !important; }
+  .rdr-hero-cta {
+    display: block;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 14px 24px;
+  }
+
+  /* ── Section typography ── */
+  .rdr-section-title { font-size: clamp(18px, 6vw, 28px); }
+  .rdr-section-sub   { font-size: 14px; }
+
+  /* ── Countdown ── */
+  .rdr-countdown-boxes { gap: 7px; }
+  .rdr-cd-box {
+    min-width: 54px;
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .rdr-cd-num   { font-size: 28px; }
+  .rdr-cd-label { font-size: 9px; letter-spacing: 0.5px; }
+
+  /* ── CTA Banner ── */
+  .rdr-cta-inner     { padding: 0 16px; }
+  .rdr-cta-text h2   { font-size: clamp(18px, 5vw, 26px) !important; }
+  .rdr-cta-text p    { font-size: 14px; }
+  .rdr-cta-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+    padding: 14px 20px;
+    border-radius: 12px;
+  }
+
+  /* ── Products ── */
+  .rdr-product-card   { border-radius: 10px; }
+  .rdr-product-info   { padding: 10px 12px 14px; }
+  .rdr-product-name   { font-size: 13px; }
+  .rdr-product-price  { font-size: 14px; margin-bottom: 8px; }
+  .rdr-product-btn    { font-size: 12px; padding: 7px 14px; border-radius: 6px; }
+
+  /* ── Features ── */
+  .rdr-feature-card  { padding: 20px 16px; border-radius: 12px; }
+  .rdr-feature-icon  { font-size: 32px; margin-bottom: 10px; }
+  .rdr-feature-title { font-size: 16px; }
+  .rdr-feature-desc  { font-size: 14px; }
+
+  /* ── Testimonials ── */
+  .rdr-testi-card { padding: 20px 16px; border-radius: 12px; }
+  .rdr-testi-text { font-size: 14px; }
+
+  /* ── Video ── */
+  .rdr-video { padding-left: 12px !important; padding-right: 12px !important; }
+
+  /* ── Columns nested blocks ── */
+  .rdr-columns-grid { gap: 16px !important; }
+}
